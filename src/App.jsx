@@ -1,11 +1,11 @@
 import { Suspense, useState, useEffect } from 'react'
 import Scene from './components/Scene'
-import LoadingOverlay from './components/LoadingOverlay'
+import IntroOverlay from './components/IntroOverlay'
 import './App.css'
 
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0)
-  const [isLoaderActive, setIsLoaderActive] = useState(true)
+  const [introComplete, setIntroComplete] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,16 +89,17 @@ export default function App() {
   ]
 
   return (
-    <main className="app">
-      {isLoaderActive && (
-        <LoadingOverlay onComplete={() => setIsLoaderActive(false)} />
+    <>
+      {!introComplete && (
+        <IntroOverlay onComplete={() => setIntroComplete(true)} />
       )}
 
-      <div className="canvas-container">
-        <Suspense fallback={null}>
-          <Scene scrollProgress={scrollProgress} />
-        </Suspense>
-      </div>
+      <main className="app">
+        <div className="canvas-container">
+          <Suspense fallback={null}>
+            <Scene scrollProgress={scrollProgress} />
+          </Suspense>
+        </div>
 
       <div className="scroll-content">
         {panels.map((panel, idx) => (
@@ -137,5 +138,6 @@ export default function App() {
 
       <p className="interaction-hint">Drag to Orbit · Scroll to Story</p>
     </main>
+    </>
   )
 }
