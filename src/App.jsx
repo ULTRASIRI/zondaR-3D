@@ -1,4 +1,5 @@
 import { Suspense, useState, useEffect } from 'react'
+import { gsap } from 'gsap'
 import Scene from './components/Scene'
 import IntroOverlay from './components/IntroOverlay'
 import './App.css'
@@ -6,6 +7,8 @@ import './App.css'
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [introComplete, setIntroComplete] = useState(false)
+  const [revealProgress, setRevealProgress] = useState(0)
+  const [heroRevealComplete, setHeroRevealComplete] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,6 +38,40 @@ export default function App() {
       clearTimeout(timeoutId)
     }
   }, [])
+
+  // 1. Robustly manage scroll-locking on body and html elements
+  useEffect(() => {
+    if (heroRevealComplete) {
+      document.body.style.overflow = 'auto'
+      document.documentElement.style.overflow = 'auto'
+    } else {
+      document.body.style.overflow = 'hidden'
+      document.documentElement.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+      document.documentElement.style.overflow = ''
+    }
+  }, [heroRevealComplete])
+
+  // 2. Animate reveal progress using GSAP when intro completes
+  useEffect(() => {
+    if (introComplete) {
+      const obj = { value: 0 }
+      gsap.to(obj, {
+        value: 1,
+        duration: 2.5,
+        ease: 'power2.inOut',
+        onUpdate: () => {
+          setRevealProgress(obj.value)
+        },
+        onComplete: () => {
+          setHeroRevealComplete(true)
+        }
+      })
+    }
+  }, [introComplete])
 
   // Map scroll progress to the active storytelling panel (0 to 5)
   const activeIndex = Math.round(scrollProgress * 5)
@@ -97,47 +134,58 @@ export default function App() {
       <main className="app">
         <div className="canvas-container">
           <Suspense fallback={null}>
-            <Scene scrollProgress={scrollProgress} />
+            <Scene
+              scrollProgress={scrollProgress}
+              revealProgress={revealProgress}
+              heroRevealComplete={heroRevealComplete}
+            />
           </Suspense>
         </div>
 
-      <div className="scroll-content">
-        {panels.map((panel, idx) => (
-          <section
-            key={idx}
-            className={`panel ${panel.alignment} ${activeIndex === idx ? 'active' : ''}`}
-          >
-            <div className="panel-inner">
-              <span className="panel-eyebrow">{panel.eyebrow}</span>
-              <h2 className="panel-title">{panel.title}</h2>
-              <p className="panel-description">{panel.description}</p>
-              
-              {panel.isStats && (
-                <div className="stats-grid">
-                  {panel.stats.map((stat, sIdx) => (
-                    <div key={sIdx} className="stat-card">
-                      <span className="stat-value">{stat.value}</span>
-                      <span className="stat-label">{stat.label}</span>
+        <div className="scroll-content">
+          {panels.map((panel, idx) => {
+            const isHeroPanel = idx === 0
+            const isActive = isHeroPanel
+              ? (activeIndex === 0 && heroRevealComplete)
+              : (activeIndex === idx)
+
+            return (
+              <section
+                key={idx}
+                className={`panel ${panel.alignment} ${isHeroPanel ? 'hero-panel' : ''} ${isActive ? 'active' : ''}`}
+              >
+                <div className="panel-inner">
+                  <span className="panel-eyebrow">{panel.eyebrow}</span>
+                  <h2 className="panel-title">{panel.title}</h2>
+                  <p className="panel-description">{panel.description}</p>
+                  
+                  {panel.isStats && (
+                    <div className="stats-grid">
+                      {panel.stats.map((stat, sIdx) => (
+                        <div key={sIdx} className="stat-card">
+                          <span className="stat-value">{stat.value}</span>
+                          <span className="stat-label">{stat.label}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
+                  )}
 
-              {panel.showArrow && (
-                <div className="scroll-indicator">
-                  <span className="scroll-indicator-text">SCROLL TO DISCOVER</span>
-                  <div className="scroll-indicator-line">
-                    <div className="scroll-indicator-fill" />
-                  </div>
+                  {panel.showArrow && (
+                    <div className="scroll-indicator">
+                      <span className="scroll-indicator-text">SCROLL TO DISCOVER</span>
+                      <div className="scroll-indicator-line">
+                        <div className="scroll-indicator-fill" />
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </section>
-        ))}
-      </div>
+              </section>
+            )
+          })}
+        </div>
 
-      <p className="interaction-hint">Drag to Orbit · Scroll to Story</p>
-    </main>
+        <p className="interaction-hint">Drag to Orbit · Scroll to Story</p>
+      </main>
     </>
   )
 }

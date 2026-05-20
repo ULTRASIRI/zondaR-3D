@@ -23,7 +23,7 @@ function getInterpolatedValue(progress, keyframes) {
   return keyframes[index] + fraction * (keyframes[index + 1] - keyframes[index])
 }
 
-export default function PaganiModel({ scrollProgress = 0 }) {
+export default function PaganiModel({ scrollProgress = 0, revealProgress = 0, heroRevealComplete = false }) {
   const group = useRef()
   const { scene } = useGLTF(MODEL_PATH, true, true, extendGltfLoader)
 
@@ -53,15 +53,28 @@ export default function PaganiModel({ scrollProgress = 0 }) {
   useFrame((state, delta) => {
     if (!group.current) return
 
-    // Interpolate target values based on current scroll progress
-    const targetX = getInterpolatedValue(scrollProgress, xKeyframes)
-    const targetY = getInterpolatedValue(scrollProgress, yKeyframes)
-    const targetZ = getInterpolatedValue(scrollProgress, zKeyframes)
-    const targetScale = getInterpolatedValue(scrollProgress, scaleKeyframes)
-    const targetRotationY = getInterpolatedValue(scrollProgress, rYKeyframes)
-
-    // Smooth factor (lerp weight per frame)
+    let targetX, targetY, targetZ, targetScale, targetRotationY
     const ease = 0.05
+
+    if (!heroRevealComplete) {
+      // Cinematic Reveal Pose Interpolation based on revealProgress (0 to 1)
+      targetX = 2.5
+      targetY = -1.2
+      targetZ = 0
+      
+      // Interpolate scale from 900 (oversized cinematic close-up) to 520 (hero scale)
+      targetScale = THREE.MathUtils.lerp(900, 520, revealProgress)
+      
+      // Interpolate rotation.y from Math.PI (180 deg) to Math.PI / 4 (45 deg)
+      targetRotationY = THREE.MathUtils.lerp(Math.PI, Math.PI / 4, revealProgress)
+    } else {
+      // Normal Scroll-Driven Multi-Keyframe Pose System
+      targetX = getInterpolatedValue(scrollProgress, xKeyframes)
+      targetY = getInterpolatedValue(scrollProgress, yKeyframes)
+      targetZ = getInterpolatedValue(scrollProgress, zKeyframes)
+      targetScale = getInterpolatedValue(scrollProgress, scaleKeyframes)
+      targetRotationY = getInterpolatedValue(scrollProgress, rYKeyframes)
+    }
 
     // Apply smooth linear interpolation (lerp) to transforms
     group.current.position.x = THREE.MathUtils.lerp(group.current.position.x, targetX, ease)
@@ -83,9 +96,9 @@ export default function PaganiModel({ scrollProgress = 0 }) {
   return (
     <group
       ref={group}
-      scale={[520, 520, 520]}
+      scale={[900, 900, 900]}
       position={[2.5, -1.2, 0]}
-      rotation={[0, Math.PI / 4, 0]}
+      rotation={[0, Math.PI, 0]}
     >
       <primitive object={scene} />
     </group>

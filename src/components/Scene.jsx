@@ -18,11 +18,12 @@ function RendererSetup() {
   return null
 }
 
-function Controls() {
+function Controls({ enabled }) {
   const invalidate = useThree((s) => s.invalidate)
 
   return (
     <OrbitControls
+      enabled={enabled}
       enableZoom={false}
       enablePan={false}
       minPolarAngle={ORBIT_LIMITS.minPolarAngle}
@@ -35,15 +36,19 @@ function Controls() {
   )
 }
 
-function SceneContent({ scrollProgress }) {
+function SceneContent({ scrollProgress, revealProgress, heroRevealComplete }) {
   return (
     <>
       <RendererSetup />
       <Environment />
       <Lighting />
       <Stars radius={300} depth={100} count={2000} factor={1} fade speed={0.05} />
-      <PaganiModel scrollProgress={scrollProgress} />
-      <Controls />
+      <PaganiModel
+        scrollProgress={scrollProgress}
+        revealProgress={revealProgress}
+        heroRevealComplete={heroRevealComplete}
+      />
+      <Controls enabled={heroRevealComplete} />
       <PostProcessing />
     </>
   )
@@ -60,7 +65,7 @@ function CanvasLoader() {
   )
 }
 
-export default function Scene({ scrollProgress }) {
+export default function Scene({ scrollProgress, revealProgress, heroRevealComplete }) {
   return (
     <Canvas
       className="hero-canvas"
@@ -87,7 +92,11 @@ export default function Scene({ scrollProgress }) {
       }}
     >
       <Suspense fallback={<CanvasLoader />}>
-        <SceneContent scrollProgress={scrollProgress} />
+        <SceneContent
+          scrollProgress={scrollProgress}
+          revealProgress={revealProgress}
+          heroRevealComplete={heroRevealComplete}
+        />
       </Suspense>
     </Canvas>
   )

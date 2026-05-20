@@ -4,7 +4,7 @@ body,
 #root {
   height: auto !important;
   min-height: 100vh;
-  overflow-y: auto !important;
+  overflow-y: auto;
   overflow-x: hidden !important;
   background-color: #020202;
   scroll-behavior: smooth;
@@ -462,4 +462,23 @@ body,
     opacity: 0.85;
     letter-spacing: 0.43em;
   }
+}
+
+/* --- Cinematic Hero Panel Reveal Styles --- */
+.hero-panel {
+  opacity: 1 !important; /* Ensure container is visible */
+  transform: none !important;
+}
+
+.hero-panel .panel-inner {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1),
+              transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, opacity;
+}
+
+.hero-panel.active .panel-inner {
+  opacity: 1;
+  transform: translateY(0);
 }
