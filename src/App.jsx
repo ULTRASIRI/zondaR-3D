@@ -5,6 +5,7 @@ import './App.css'
 
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [isLoaderActive, setIsLoaderActive] = useState(true)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,8 +90,12 @@ export default function App() {
 
   return (
     <main className="app">
+      {isLoaderActive && (
+        <LoadingOverlay onComplete={() => setIsLoaderActive(false)} />
+      )}
+
       <div className="canvas-container">
-        <Suspense fallback={<LoadingOverlay />}>
+        <Suspense fallback={null}>
           <Scene scrollProgress={scrollProgress} />
         </Suspense>
       </div>
