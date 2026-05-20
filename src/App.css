@@ -78,6 +78,13 @@ body,
 
 .panel.align-center {
   justify-content: center;
+  align-items: flex-start; /* Push centered text upwards to avoid the centered vehicle below */
+  padding-top: 10vh;
+}
+
+.panel.align-top {
+  align-items: flex-start; /* For stats grid and top alignment */
+  padding-top: 8vh;
 }
 
 /* Content wrapper inside each panel */

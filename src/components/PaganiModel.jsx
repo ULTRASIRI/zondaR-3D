@@ -35,18 +35,19 @@ export default function PaganiModel({ scrollProgress = 0 }) {
     scene.position.set(0, 0, 0)
   }, [scene])
 
-  // Desired Transform Matrices for 5 keyframe nodes (0.00, 0.25, 0.50, 0.75, 1.00)
-  const xKeyframes = [2.5, 1.5, 0, -2.0, -3.5]
-  const yKeyframes = [-1.2, -1.0, -0.8, -0.6, -0.4]
-  const zKeyframes = [0, 0, 0, 0, 0]
-  const scaleKeyframes = [520, 500, 470, 430, 390]
+  // Desired Transform Matrices for 6 keyframe nodes (0.00, 0.20, 0.40, 0.60, 0.80, 1.00)
+  const xKeyframes = [2.5, -2.5, -4.5, 4.5, 0, 5.5]
+  const yKeyframes = [-1.2, -1.0, -1.1, -0.8, -0.6, -2.0]
+  const zKeyframes = [0, 0, -1.0, 0, 0, -2.0]
+  const scaleKeyframes = [520, 500, 460, 470, 540, 420]
   
   const rYKeyframes = [
     (45 * Math.PI) / 180,  // 45 degrees
     (120 * Math.PI) / 180, // 120 degrees
-    (220 * Math.PI) / 180, // 220 degrees
-    (320 * Math.PI) / 180, // 320 degrees
-    (450 * Math.PI) / 180  // 450 degrees
+    (180 * Math.PI) / 180, // 180 degrees
+    (260 * Math.PI) / 180, // 260 degrees
+    (330 * Math.PI) / 180, // 330 degrees
+    (90 * Math.PI) / 180   // 90 degrees
   ]
 
   useFrame((state, delta) => {

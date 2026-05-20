@@ -43,14 +43,14 @@ export default function App() {
       eyebrow: 'PAGANI',
       title: 'Zonda Revolución',
       description: 'The ultimate expression of pure performance. An uncompromising track weapon where automotive art meets extreme speed.',
-      alignment: 'align-center',
+      alignment: 'align-left',
       showArrow: true
     },
     {
       eyebrow: 'PERFORMANCE',
       title: '800 HP V12',
       description: 'The heart of the beast is a Mercedes-AMG 6.0L naturally aspirated V12 engine. An unrestrained mechanical symphony revving up to 8,000 RPM.',
-      alignment: 'align-left'
+      alignment: 'align-right'
     },
     {
       eyebrow: 'MONOCOQUE',
@@ -74,7 +74,7 @@ export default function App() {
       eyebrow: 'ACHIEVEMENTS',
       title: 'Track Records',
       description: 'Designed purely to rewrite track limits, validated by extreme high-speed engineering and absolute mechanical precision.',
-      alignment: 'align-left',
+      alignment: 'align-left align-top',
       isStats: true,
       stats: [
         { label: 'Nürburgring Nordschleife', value: '6:47' },
